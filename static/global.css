@@ -92,7 +92,8 @@ body {
     position: fixed;
     height: 100vh;
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
-    z-index: 100;
+    z-index: 1000;
+    transition: var(--transition);
 }
 
 .logo-container {
@@ -166,6 +167,7 @@ body {
     margin-left: var(--sidebar-width);
     padding: 50px 60px;
     min-width: 0;
+    transition: var(--transition);
 }
 
 /* ================= HEADER ================= */
@@ -408,6 +410,23 @@ body {
     background: #f8fafc;
 }
 
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+@media (max-width: 640px) {
+    .table th, .table td {
+        padding: 12px 15px;
+        min-width: 120px;
+    }
+    
+    .table th:first-child, .table td:first-child {
+        min-width: 60px;
+    }
+}
+
 /* ================= BADGES ================= */
 .badge {
     display: inline-flex;
@@ -611,16 +630,12 @@ body {
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1024px) {
-    .profile-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .profile-sidebar {
-        padding: 40px;
-    }
-
     :root {
         --sidebar-width: 80px;
+    }
+
+    .profile-container {
+        grid-template-columns: 1fr;
     }
 
     .logo-container {
@@ -646,23 +661,62 @@ body {
     }
 }
 
-@media (max-width: 640px) {
-    .stat-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .main-content {
-        padding: 20px 15px;
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 0px;
     }
 
-    .header-title h1 {
-        font-size: 22px;
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+        width: 280px;
+    }
+
+    .sidebar.active .nav-link span {
+        display: block;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 80px 20px 20px;
     }
 
     .top-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 20px;
+    }
+
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1100;
+        background: var(--primary);
+        color: white;
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-md);
+    }
+}
+
+@media (max-width: 640px) {
+    .stat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header-title h1 {
+        font-size: 24px;
     }
 
     .profile-section {
@@ -673,4 +727,16 @@ body {
         width: 100%;
         justify-content: center;
     }
+
+    .profile-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-content-card {
+        padding: 30px 20px;
+    }
+}
+
+.menu-toggle {
+    display: none;
 }

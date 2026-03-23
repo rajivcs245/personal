@@ -23,6 +23,11 @@
 <body>
 
     <div class="app-container">
+        
+        <!-- Mobile Menu Toggle -->
+        <div class="menu-toggle" id="sidebarToggle">
+            <i data-lucide="menu"></i>
+        </div>
 
         <!-- ================= SIDEBAR ================= -->
         <aside class="sidebar">
@@ -190,6 +195,16 @@
     <!-- ========== ICONS SCRIPT ========== -->
     <script>
         lucide.createIcons();
+
+        // Mobile Sidebar Toggle
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        }
     </script>
     
     {% block extra_js %}{% endblock %}
