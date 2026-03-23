@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Platform Analytics{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_report.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-wrapper {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 30px;
+        }
+        .earnings-card {
+            margin-top: 40px;
+        }
+    </style>
+{% endblock %}
+
+{% block page_title %}Platform Analytics Report{% endblock %}
+{% block page_subtitle %}System-wide booking and revenue overview{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <!-- ================= ANALYTICS GRID ================= -->
+    <section style="margin-bottom: 40px;">
+        <div class="stat-grid">
+            <div class="card glass">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div>
+                        <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Weekly Bookings</span>
+                        <div style="font-size: 32px; font-weight: 800; color: var(--secondary); margin-top: 8px;">{{ weekly_bookings or 0 }}</div>
+                    </div>
+                    <div style="background: hsla(221, 83%, 53%, 0.1); width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                        <i data-lucide="calendar"></i>
+                    </div>
+                </div>
+                <div style="font-size: 12px; color: var(--success); font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                    <i data-lucide="trending-up" style="width: 14px;"></i> Keep it up!
+                </div>
+            </div>
+
+            <div class="card glass">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div>
+                        <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Monthly Active</span>
+                        <div style="font-size: 32px; font-weight: 800; color: var(--secondary); margin-top: 8px;">{{ monthly_bookings or 0 }}</div>
+                    </div>
+                    <div style="background: hsla(158, 77%, 41%, 0.1); width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--success);">
+                        <i data-lucide="calendar-days"></i>
+                    </div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted);">Last 30 days overview</div>
+            </div>
+
+            <div class="card glass">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div>
+                        <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Total Finished</span>
+                        <div style="font-size: 32px; font-weight: 800; color: var(--secondary); margin-top: 8px;">{{ yearly_bookings or 0 }}</div>
+                    </div>
+                    <div style="background: hsla(38, 92%, 50%, 0.1); width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--warning);">
+                        <i data-lucide="award"></i>
+                    </div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted);">Year-to-date performance</div>
+            </div>
+        </div>
+    </section>
+
+    <section style="margin-bottom: 50px;">
+        <h3 style="color: var(--secondary); font-weight: 800; font-size: 20px; margin-bottom: 24px;">Revenue Overview</h3>
+        <div class="stat-grid">
+            <div class="card glass" style="border-bottom: 4px solid var(--primary);">
+                <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Weekly Revenue</span>
+                <div style="font-size: 28px; font-weight: 800; color: var(--primary); margin-top: 5px;">₹{{ weekly_revenue or 0 }}</div>
+            </div>
+
+            <div class="card glass" style="border-bottom: 4px solid var(--success);">
+                <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Monthly Revenue</span>
+                <div style="font-size: 28px; font-weight: 800; color: var(--success); margin-top: 5px;">₹{{ monthly_revenue or 0 }}</div>
+            </div>
+
+            <div class="card glass" style="border-bottom: 4px solid var(--warning);">
+                <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Annual Revenue</span>
+                <div style="font-size: 28px; font-weight: 800; color: var(--warning); margin-top: 5px;">₹{{ yearly_revenue or 0 }}</div>
+            </div>
+        </div>
+    </section>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-bottom: 50px;">
+        <!-- ================= DOUGHNUT CHART ================= -->
+        <div class="card glass" style="padding: 40px;">
+            <h3 style="text-align:center; margin-bottom: 30px; font-weight: 800; color: var(--secondary);">Revenue Distribution</h3>
+            <div style="max-width: 320px; margin: 0 auto;">
+                <canvas id="adminRevenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- ================= PROVIDER EARNINGS ================= -->
+        {% if provider_earnings %}
+        <div class="card glass" style="padding: 0; overflow: hidden;">
+            <div style="padding: 30px;">
+                <h3 style="font-weight: 800; color: var(--secondary);">Top Providers</h3>
+                <p style="font-size: 14px; color: var(--text-muted);">Revenue generated by top performers</p>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="padding-left: 30px;">Provider Name</th>
+                        <th style="text-align: right; padding-right: 30px;">Total Earnings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in provider_earnings %}
+                    <tr>
+                        <td style="padding-left: 30px; font-weight: 700; color: var(--secondary);">{{ p.name }}</td>
+                        <td style="text-align: right; padding-right: 30px; font-weight: 800; color: var(--success);">₹{{ p.total_earnings }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        const revenueData = JSON.parse(
+            '{{ [weekly_revenue or 0, monthly_revenue or 0, yearly_revenue or 0] | tojson }}'
+        );
+
+        const ctx = document.getElementById('adminRevenueChart');
+
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Weekly', 'Monthly', 'Yearly'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: revenueData,
+                        backgroundColor: [
+                            'hsla(221, 83%, 53%, 0.8)',
+                            'hsla(158, 77%, 41%, 0.8)',
+                            'hsla(38, 92%, 50%, 0.8)'
+                        ],
+                        borderColor: 'white',
+                        borderWidth: 4,
+                        hoverOffset: 20
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 30,
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 13,
+                                    weight: '600'
+                                },
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+
+{% block title %}My Transactions{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .booking-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .booking-table th {
+            padding: 12px 20px;
+            text-align: left;
+            color: var(--text-muted);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .booking-table td {
+            background: rgba(248, 250, 252, 0.5);
+            padding: 16px 20px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        .booking-table tr td:first-child {
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+        }
+
+        .booking-table tr td:last-child {
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        }
+
+        .btn-cancel {
+            background: #fee2e2;
+            color: var(--danger);
+            border: none;
+            padding: 6px 14px;
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-cancel:hover {
+            background: var(--danger);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-review {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: none;
+            padding: 6px 14px;
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-review:hover {
+            background: #f59e0b;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Star Rating - LTR behavior using row-reverse */
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            cursor: pointer;
+            color: #cbd5e1;
+            font-size: 30px;
+            transition: color 0.2s ease;
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #f59e0b;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 40px auto;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+    </style>
+{% endblock %}
+
+{% block page_title %}My Service Bookings{% endblock %}
+{% block page_subtitle %}Track your past and upcoming service requests{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div class="card glass">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h3 style="color: var(--secondary); font-size: 20px; font-weight: 800; letter-spacing: -0.5px;">Recent Activity</h3>
+            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Total Bookings: {{ bookings|length }}</span>
+        </div>
+
+        {% if bookings %}
+        <div style="overflow-x: auto; margin: 0 -30px;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="padding-left: 30px;">Service</th>
+                        <th>Provider</th>
+                        <th>Date & Time</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th style="text-align: right; padding-right: 30px;">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td style="padding-left: 30px;">
+                            <div style="font-weight: 700; color: var(--secondary);">{{ booking.service_name }}</div>
+                            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">ID: #B{{ booking.id }}</div>
+                        </td>
+                        <td>{{ booking.provider_name }}</td>
+                        <td>
+                            <div style="font-weight: 600; color: var(--text-main);">{{ booking.booking_date }}</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">{{ booking.time_slot }}</div>
+                        </td>
+                        <td style="font-weight: 800; color: var(--primary);">₹{{ booking.amount or 0 }}</td>
+
+                        <td>
+                            {% if booking.status == 'Confirmed' %}
+                            <span class="badge active">Confirmed</span>
+                            {% elif booking.status == 'Cancelled' %}
+                            <span class="badge cancelled">Cancelled</span>
+                            {% elif booking.status == 'Completed' %}
+                            <span class="badge completed">Completed</span>
+                            {% else %}
+                            <span class="badge pending">{{ booking.status }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td style="padding-right: 30px;">
+                            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                {% if booking.status == 'Confirmed' %}
+                                <form action="{{ url_for('user.cancel_booking', booking_id=booking.id) }}"
+                                    method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-outline"
+                                        style="padding: 6px 14px; font-size: 12px; color: var(--danger); border-color: hsla(0, 84%, 60%, 0.2);"
+                                        onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                        Cancel Request
+                                    </button>
+                                </form>
+                                {% elif booking.status == 'Completed' %}
+                                <button class="btn btn-primary" style="padding: 6px 14px; font-size: 12px;" onclick="openReviewModal('{{ booking.id }}', '{{ booking.service_name }}')">
+                                    <i data-lucide="star" style="width: 14px;"></i> Rate Service
+                                </button>
+                                {% else %}
+                                <span style="color: var(--text-muted); font-size: 13px;">--</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% else %}
+        <div style="text-align: center; padding: 100px 40px; color: var(--text-muted);">
+            <div style="background: var(--primary-light); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                <i data-lucide="calendar-x" style="width: 40px; height: 40px; color: var(--primary);"></i>
+            </div>
+            <h3 style="color: var(--secondary); margin-bottom: 8px; font-weight: 800;">No Activity Found</h3>
+            <p>You haven't booked any services yet. Check out available services to get started!</p>
+            <a href="{{ url_for('user.user_dashboard') }}" class="btn btn-primary" style="margin-top: 24px;">Browse Services</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modernized Review Modal -->
+<div id="reviewModal" class="modal">
+    <div class="modal-content animate-fade-in">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <div style="background: hsla(38, 92%, 50%, 0.1); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i data-lucide="star" style="width: 32px; height: 32px; color: var(--warning);"></i>
+            </div>
+            <h2 style="font-size: 24px; font-weight: 800; color: var(--secondary); margin-bottom: 8px;">Rate Your Experience</h2>
+            <p style="color: var(--text-muted); font-size: 15px;">Rating for <span id="modalServiceName" style="color: var(--primary); font-weight: 700;"></span></p>
+        </div>
+        
+        <form action="{{ url_for('user.submit_review') }}" method="POST">
+            <input type="hidden" name="booking_id" id="modalBookingId">
+            
+            <div style="margin-bottom: 32px; text-align: center;">
+                <label class="form-label">How many stars?</label>
+                <div class="star-rating" style="font-size: 36px; margin-top: 12px;">
+                    <style>
+                        .star-rating input { display: none; }
+                        .star-rating label { color: #cbd5e1; cursor: pointer; transition: var(--transition); }
+                        .star-rating label:hover, 
+                        .star-rating label:hover ~ label, 
+                        .star-rating input:checked ~ label { 
+                            color: var(--warning); 
+                            transform: scale(1.1); 
+                        }
+                    </style>
+                    <input type="radio" id="star5" name="rating" value="5" required /><label for="star5">★</label>
+                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
+                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
+                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
+                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 32px;">
+                <label class="form-label">Your Feedback (Optional)</label>
+                <textarea name="comment" class="form-input" rows="4" placeholder="How was the service? Your feedback helps providers improve." style="resize: none;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button type="button" class="btn btn-outline" onclick="closeReviewModal()" style="flex: 1; padding: 12px;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px; background: var(--primary) !important; color: white !important;">
+                    Post Review
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openReviewModal(bookingId, serviceName) {
+        document.getElementById('modalBookingId').value = bookingId;
+        document.getElementById('modalServiceName').innerText = serviceName;
+        document.getElementById('reviewModal').style.display = 'block';
+    }
+
+    function closeReviewModal() {
+        document.getElementById('reviewModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        let modal = document.getElementById('reviewModal');
+        if (event.target == modal) {
+            closeReviewModal();
+        }
+    }
+</script>
+{% endblock %}

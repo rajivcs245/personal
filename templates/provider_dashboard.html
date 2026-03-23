@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}Provider Dashboard{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='provider_dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .roadmap-step {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            gap: 12px;
+        }
+        .status-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: #f1f5f9;
+            color: var(--text-muted);
+        }
+        .status-icon.complete {
+            background: var(--success-light);
+            color: var(--success);
+        }
+    </style>
+{% endblock %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+{% block page_subtitle %}Quick summary of your service activity{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    {% if not is_verified %}
+    <!-- ================= VERIFICATION ROADMAP ================= -->
+    <div class="card" style="margin-bottom: 30px; border-left: 4px solid var(--primary);">
+        <h3 style="margin-bottom: 20px; color: var(--secondary);">Provider Onboarding Roadmap</h3>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            
+            <!-- Step 1 -->
+            <div class="roadmap-step">
+                <div class="status-icon {% if is_profile_complete %}complete{% endif %}">
+                    <i data-lucide="{% if is_profile_complete %}check{% else %}user{% endif %}" style="width: 16px; height: 16px;"></i>
+                </div>
+                <div>
+                    <h4 style="font-size: 14px; margin-bottom: 4px;">Complete Profile</h4>
+                    <p style="font-size: 12px; color: var(--text-muted);">Add photo and bio</p>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="roadmap-step">
+                <div class="status-icon {% if is_services_added %}complete{% endif %}">
+                    <i data-lucide="{% if is_services_added %}check{% else %}plus{% endif %}" style="width: 16px; height: 16px;"></i>
+                </div>
+                <div>
+                    <h4 style="font-size: 14px; margin-bottom: 4px;">Add Services</h4>
+                    <p style="font-size: 12px; color: var(--text-muted);">List your offerings</p>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="roadmap-step">
+                <div class="status-icon {% if is_docs_uploaded %}complete{% endif %}">
+                    <i data-lucide="{% if is_docs_uploaded %}check{% else %}shield-alert{% endif %}" style="width: 16px; height: 16px;"></i>
+                </div>
+                <div>
+                    <h4 style="font-size: 14px; margin-bottom: 4px;">Upload Docs</h4>
+                    <p style="font-size: 12px; color: var(--text-muted);">ID proof for safety</p>
+                </div>
+            </div>
+
+            <div style="flex: 1; min-width: 200px; display: flex; align-items: center;">
+                <a href="{{ url_for('provider.provider_verification') }}" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 13px;">
+                    Review Status
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <!-- ================= STATS ================= -->
+    <div class="stat-grid">
+        <div class="card">
+            <h3 style="color: var(--text-muted); font-size: 14px; text-transform: uppercase;">Total Services</h3>
+            <p style="font-size: 32px; font-weight: 700; margin-top: 10px;">{{ total_services or 0 }}</p>
+        </div>
+
+        <div class="card">
+            <h3 style="color: var(--text-muted); font-size: 14px; text-transform: uppercase;">Pending Requests</h3>
+            <p style="font-size: 32px; font-weight: 700; margin-top: 10px; color: var(--primary);">{{ pending_requests or 0 }}</p>
+        </div>
+
+        <div class="card">
+            <h3 style="color: var(--text-muted); font-size: 14px; text-transform: uppercase;">Total Bookings</h3>
+            <p style="font-size: 32px; font-weight: 700; margin-top: 10px;">{{ total_bookings or 0 }}</p>
+        </div>
+    </div>
+
+    <!-- ================= BOOKINGS SECTION ================= -->
+    <div style="margin-top:40px;">
+        <h3>Recent Bookings</h3>
+
+        {% if bookings %}
+        <div class="card" style="padding: 0; overflow: hidden; margin-top: 20px;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td style="font-weight: 500;">{{ booking.user_name }}</td>
+                        <td>{{ booking.service_name }}</td>
+                        <td>{{ booking.booking_date }}</td>
+                        <td>{{ booking.time_slot }}</td>
+                        <td style="font-weight: 600;">₹{{ booking.amount }}</td>
+
+                        <td>
+                            <span class="badge {{ booking.status.lower() }}">{{ booking.status }}</span>
+                        </td>
+
+                        <td>
+                            {% if booking.status == 'Confirmed' %}
+                            <form action="{{ url_for('provider.mark_completed', booking_id=booking.id) }}"
+                                method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;"
+                                    onclick="return confirm('Mark this service as completed?')">
+                                    Mark Completed
+                                </button>
+                            </form>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="margin-top: 20px; color: var(--text-muted);">No bookings available.</p>
+        {% endif %}
+    </div>
+
+    <!-- REVENUE SECTION -->
+    {% if weekly_revenue is defined %}
+    <div style="margin-top:40px;">
+        <h3>Revenue Overview</h3>
+        <div class="card" style="margin-top: 20px;">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    {% if weekly_revenue is defined %}
+    <script>
+        const revenueData = JSON.parse(
+            '{{ [weekly_revenue or 0, monthly_revenue or 0, yearly_revenue or 0] | tojson }}'
+        );
+
+        const ctx = document.getElementById('revenueChart');
+
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Weekly', 'Monthly', 'Yearly'],
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: revenueData,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    {% endif %}
+</div>
+{% endblock %}

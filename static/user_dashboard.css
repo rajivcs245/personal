@@ -1,0 +1,44 @@
+/* ================= USER DASHBOARD ================= */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.service-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 30px;
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+    transition: var(--transition);
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+}
+
+.service-card h3 {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: var(--secondary);
+    letter-spacing: -0.5px;
+}
+
+.price {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 20px 0;
+    color: var(--primary);
+}
+
+.service-card .btn-primary {
+    margin-top: auto;
+    width: 100%;
+    padding: 14px;
+}

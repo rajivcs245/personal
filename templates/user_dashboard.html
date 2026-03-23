@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='user_dashboard.css') }}">
+{% endblock %}
+
+{% block page_title %}Available Services{% endblock %}
+{% block page_subtitle %}Browse and book your preferred services easily{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <!-- ================= SEARCH & FILTER ================= -->
+    <div class="card" style="margin-bottom: 30px;">
+        <form action="{{ url_for('user.user_dashboard') }}" method="GET" style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <div style="flex: 2; min-width: 250px; position: relative;">
+                <i data-lucide="search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 18px; color: var(--text-muted);" aria-hidden="true"></i>
+                <input type="text" name="q" class="form-input" placeholder="Search for services or providers..." 
+                    value="{{ search_query }}" style="padding-left: 45px; width: 100%;" aria-label="Search for services or providers">
+            </div>
+            
+            <div style="flex: 1; min-width: 180px;">
+                <select name="location" class="form-input" style="width: 100%;" aria-label="Filter by location">
+                    <option value="">All Locations</option>
+                    {% for loc in locations %}
+                    <option value="{{ loc }}" {% if selected_location == loc %}selected{% endif %}>{{ loc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="min-width: 120px; justify-content: center;" aria-label="Apply filters">
+                <i data-lucide="filter" style="margin-right: 8px;" aria-hidden="true"></i> Filter
+            </button>
+
+            {% if search_query or selected_location %}
+            <a href="{{ url_for('user.user_dashboard') }}" class="btn" style="background: #f1f5f9; color: var(--secondary); justify-content: center;">
+                Clear
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- ================= SERVICES GRID ================= -->
+    <section class="services-grid">
+        {% if services %}
+            {% for service in services %}
+                <div class="service-card card">
+                    <h3 style="margin-bottom: 5px; color: var(--secondary);">{{ service.service_name }}</h3>
+                    
+                    <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 12px;">
+                        {% set rating = service.avg_rating|round(1) %}
+                        <div style="color: #f59e0b; display: flex; align-items: center; gap: 2px;">
+                            <i data-lucide="star" style="width: 14px; height: 14px; fill: currentColor;"></i>
+                            <span style="font-weight: 700; font-size: 14px;">{{ rating if rating > 0 else 'New' }}</span>
+                        </div>
+                        {% if service.review_count > 0 %}
+                        <span style="color: var(--text-muted); font-size: 12px;">({{ service.review_count }} reviews)</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; font-size: 14px; color: var(--text-muted);">
+                        <p style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                            <i data-lucide="user" style="width: 14px; height: 14px;"></i>
+                            <strong>Provider:</strong> {{ service.provider_name }}
+                        </p>
+                        <p style="display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="map-pin" style="width: 14px; height: 14px;"></i>
+                            <strong>Location:</strong> {{ service.location }}
+                        </p>
+                    </div>
+
+                    <div class="price" style="font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 20px;">
+                        ₹{{ service.cost }}
+                    </div>
+
+                    <a href="{{ url_for('user.booking', service_id=service.id) }}" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        Book Now <i data-lucide="arrow-right" style="margin-left: 8px;"></i>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 60px;">
+                <i data-lucide="search-x" style="width: 48px; height: 48px; color: var(--text-muted); margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;"></i>
+                <p style="color: var(--text-muted); font-size: 16px;">No services available right now. Please check back later.</p>
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

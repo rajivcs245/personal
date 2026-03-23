@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} | Service Care</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+
+    <!-- Professional Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- ================= SIDEBAR ================= -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <h2 class="logo">Service Care</h2>
+            </div>
+
+            <nav class="nav-links">
+                {% if session.role == 'admin' %}
+                    <a href="{{ url_for('admin.admin_dashboard') }}"
+                        class="nav-link {% if request.endpoint == 'admin.admin_dashboard' %}active{% endif %}">
+                        <i data-lucide="layout-dashboard" aria-hidden="true"></i> <span>Dashboard</span>
+                    </a>
+
+                    <a href="{{ url_for('admin.admin_profile') }}"
+                        class="nav-link {% if request.endpoint == 'admin.admin_profile' %}active{% endif %}">
+                        <i data-lucide="user" aria-hidden="true"></i> <span>My Profile</span>
+                    </a>
+
+                    <a href="{{ url_for('admin.manage_providers') }}"
+                        class="nav-link {% if request.endpoint == 'admin.manage_providers' %}active{% endif %}">
+                        <i data-lucide="users" aria-hidden="true"></i> <span>Manage Providers</span>
+                    </a>
+
+                    <a href="{{ url_for('admin.admin_pending_verifications') }}"
+                        class="nav-link {% if request.endpoint == 'admin.admin_pending_verifications' %}active{% endif %}">
+                        <i data-lucide="shield-check" aria-hidden="true"></i> <span>Identity Verification</span>
+                        {% if pending_verification_count and pending_verification_count > 0 %}
+                        <span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto;">
+                            {{ pending_verification_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+
+                    <a href="{{ url_for('admin.admin_pending_services') }}"
+                        class="nav-link {% if request.endpoint == 'admin.admin_pending_services' %}active{% endif %}">
+                        <i data-lucide="clock" aria-hidden="true"></i> <span>Pending Services</span>
+                        {% if pending_service_count and pending_service_count > 0 %}
+                        <span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto;">
+                            {{ pending_service_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+
+                    <a href="{{ url_for('admin.admin_report') }}"
+                        class="nav-link {% if request.endpoint == 'admin.admin_report' %}active{% endif %}">
+                        <i data-lucide="bar-chart-3" aria-hidden="true"></i> <span>Business Reports</span>
+                    </a>
+                {% elif session.role == 'provider' %}
+                    <a href="{{ url_for('provider.provider_dashboard') }}"
+                        class="nav-link {% if request.endpoint == 'provider.provider_dashboard' %}active{% endif %}">
+                        <i data-lucide="layout-dashboard" aria-hidden="true"></i> <span>Dashboard</span>
+                    </a>
+
+                    <a href="{{ url_for('provider.provider_profile') }}"
+                        class="nav-link {% if request.endpoint == 'provider.provider_profile' %}active{% endif %}">
+                        <i data-lucide="user" aria-hidden="true"></i> <span>My Profile</span>
+                    </a>
+
+                    <a href="{{ url_for('provider.provider_services') }}"
+                        class="nav-link {% if request.endpoint == 'provider.provider_services' %}active{% endif %}">
+                        <i data-lucide="briefcase" aria-hidden="true"></i> <span>My Services</span>
+                    </a>
+
+                    <a href="{{ url_for('provider.provider_verification') }}"
+                        class="nav-link {% if request.endpoint == 'provider.provider_verification' %}active{% endif %}">
+                        <i data-lucide="shield-check" aria-hidden="true"></i> <span>Verification</span>
+                    </a>
+
+                    <a href="{{ url_for('provider.provider_admin_action') }}"
+                        class="nav-link {% if request.endpoint == 'provider.provider_admin_action' %}active{% endif %}">
+                        <i data-lucide="bell" aria-hidden="true"></i> <span>Notifications</span>
+                        {% if notification_count and notification_count > 0 %}
+                        <span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto;">
+                            {{ notification_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+
+                    <a href="{{ url_for('provider.provider_report') }}"
+                        class="nav-link {% if request.endpoint == 'provider.provider_report' %}active{% endif %}">
+                        <i data-lucide="bar-chart-3" aria-hidden="true"></i> <span>Reports</span>
+                    </a>
+                {% else %}
+                    <!-- User (Customer) Sidebar links would go here -->
+                     <a href="{{ url_for('user.user_dashboard') }}"
+                        class="nav-link {% if request.endpoint == 'user.user_dashboard' %}active{% endif %}">
+                        <i data-lucide="layout-dashboard" aria-hidden="true"></i> <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('user.user_notifications') }}"
+                        class="nav-link {% if request.endpoint == 'user.user_notifications' %}active{% endif %}">
+                        <i data-lucide="bell" aria-hidden="true"></i> <span>Notifications</span>
+                        {% if user_notification_count and user_notification_count > 0 %}
+                        <span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto;">
+                            {{ user_notification_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('user.my_transactions') }}"
+                        class="nav-link {% if request.endpoint == 'user.my_transactions' %}active{% endif %}">
+                        <i data-lucide="list" aria-hidden="true"></i> <span>Transactions</span>
+                    </a>
+                    <a href="{{ url_for('user.user_report') }}"
+                        class="nav-link {% if request.endpoint == 'user.user_report' %}active{% endif %}">
+                        <i data-lucide="bar-chart-3" aria-hidden="true"></i> <span>Report</span>
+                    </a>
+                    <a href="{{ url_for('user.user_profile') }}"
+                        class="nav-link {% if request.endpoint == 'user.user_profile' %}active{% endif %}">
+                        <i data-lucide="user" aria-hidden="true"></i> <span>My Profile</span>
+                    </a>
+                {% endif %}
+
+                <a href="{{ url_for('auth.logout') }}" class="nav-link logout">
+                    <i data-lucide="log-out" aria-hidden="true"></i> <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+        <main class="main-content">
+
+            <!-- ================= HEADER ================= -->
+            <header class="top-header">
+
+                <div class="header-title">
+                    <h1>{% block page_title %}{% endblock %}</h1>
+                    <p>{% block page_subtitle %}{% endblock %}</p>
+                </div>
+
+                <!-- ================= PROFILE WIDGET ================= -->
+                <div class="profile-section">
+                    {% set profile_url = '#' %}
+                    {% if session.role == 'admin' %} {% set profile_url = url_for('admin.admin_profile') %}
+                    {% elif session.role == 'provider' %} {% set profile_url = url_for('provider.provider_profile') %}
+                    {% elif session.role == 'user' %} {% set profile_url = url_for('user.user_profile') %}
+                    {% endif %}
+                    
+                    <a href="{{ profile_url }}" class="user-profile-widget">
+                        <img src="{{ url_for('static', filename='uploads/profiles/' + (profile_photo or 'default.png')) }}"
+                            class="widget-img" alt="Profile Photo">
+                        <span class="widget-name">{{ user_name or 'Account' }}</span>
+                    </a>
+                </div>
+
+            </header>
+
+            <!-- ================= FLASH MESSAGES ================= -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="card flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+
+        </main>
+
+    </div>
+
+    <!-- ========== ICONS SCRIPT ========== -->
+    <script>
+        lucide.createIcons();
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

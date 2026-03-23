@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <!-- Professional Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="login-container animate-fade-in">
+        <div class="login-card">
+            <h2 style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                <i data-lucide="user-plus" style="width: 32px; height: 32px; color: var(--primary);"></i> Create Account
+            </h2>
+            <p style="text-align: center; color: #64748b; margin-bottom: 25px; font-size: 14px;">Join our marketplace to get or provide services</p>
+
+            <!-- Added autocomplete="off" to prevent browser pre-filling -->
+            <form action="{{ url_for('auth.signup') }}" method="post" autocomplete="off">
+                <label>Full Name:</label>
+                <input type="text" name="name" placeholder="Enter your full name" required autocomplete="off">
+
+                <label>Email Address:</label>
+                <input type="email" name="email" placeholder="Enter your email" required autocomplete="off">
+
+                <label>Password:</label>
+                <div class="password-field">
+                    <input type="password" name="password" id="signup-password" placeholder="Min 6 characters" required 
+                        minlength="6" autocomplete="new-password">
+                    <span class="toggle-password" onclick="toggleVisibility('signup-password', 'eye-icon-signup')">
+                        <i data-lucide="eye" id="eye-icon-signup" style="width: 20px; height: 20px;"></i>
+                    </span>
+                </div>
+
+                <label style="margin-top: 15px;">I want to join as a:</label>
+                <select name="role" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; background-color: white; margin-top: 8px; font-size: 14px; outline: none; transition: 0.3s;">
+                    <option value="" disabled selected>-- Select Role --</option>
+                    <option value="user">Service Requester (User)</option>
+                    <option value="provider">Service Provider</option>
+                </select>
+
+                <button type="submit" class="btn">Create Account</button>
+
+                <p class="small-text">
+                    Already have an account?
+                    <a href="{{ url_for('auth.login') }}">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== ICONS SCRIPT ========== -->
+    <script>
+        lucide.createIcons();
+
+        function toggleVisibility(fieldId, iconId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(iconId);
+
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                field.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+    </script>
+</body>
+
+</html>

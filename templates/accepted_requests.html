@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Accepted Requests</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='accepted_requests.css') }}">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+            <h2 class="logo">Service Care</h2>
+
+            <nav>
+                <a href="{{ url_for('user.user_dashboard') }}" class="nav-link">
+                    Dashboard
+                </a>
+
+                <a href="{{ url_for('user.my_transactions') }}" class="nav-link">
+                    My Transactions
+                </a>
+
+                <a href="{{ url_for('user.user_report') }}" class="nav-link">
+                    Report
+                </a>
+
+                <a href="{{ url_for('auth.logout') }}" class="nav-link logout">
+                    Logout
+                </a>
+        </aside>
+
+        <!-- ================= CONTENT ================= -->
+        <div class="content">
+            <h2>Accepted Booking Requests</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service Name</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for b in bookings %}
+                    <tr>
+                        <td>{{ b.service_name }}</td>
+                        <td>{{ b.time_slot }}</td>
+                        <td>
+                            <span class="status {{ b.status|lower }}">
+                                {{ b.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="no-data">
+                            No accepted bookings found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+</body>
+
+</html>

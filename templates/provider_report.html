@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Performance Reports{% endblock %}
+
+{% block extra_css %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .report-section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chart-card {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+    </style>
+{% endblock %}
+
+{% block page_title %}Performance Reports{% endblock %}
+{% block page_subtitle %}In-depth analysis of your service bookings and revenue growth{% endblock %}
+
+{% block content %}
+    <!-- ================= WEEKLY ================= -->
+    <div class="report-section">
+        <h3 class="section-title">
+            <i data-lucide="calendar" style="width: 18px; height: 18px; color: var(--primary);"></i>
+            Weekly Performance
+        </h3>
+        <div class="stat-grid">
+            <div class="card">
+                <div class="stat-header">
+                    <span class="stat-label">Total Bookings</span>
+                    <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--primary);">
+                        <i data-lucide="clipboard-list"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ weekly_bookings or 0 }}</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-header">
+                    <span class="stat-label">Unique Customers</span>
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                        <i data-lucide="users"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ weekly_users or 0 }}</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-header">
+                    <span class="stat-label">Weekly Earnings</span>
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                        <i data-lucide="indian-rupee"></i>
+                    </div>
+                </div>
+                <div class="stat-value">₹{{ weekly_revenue or 0 }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MONTHLY & YEARLY ================= -->
+    <div class="report-section">
+        <h3 class="section-title">
+            <i data-lucide="trending-up" style="width: 18px; height: 18px; color: var(--success);"></i>
+            Long-term Growth
+        </h3>
+        <div class="stat-grid">
+            <div class="card">
+                <div class="stat-header">
+                    <span class="stat-label">Monthly Revenue</span>
+                    <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                        <i data-lucide="bar-chart"></i>
+                    </div>
+                </div>
+                <div class="stat-value">₹{{ monthly_revenue or 0 }}</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-header">
+                    <span class="stat-label">Yearly Earnings</span>
+                    <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                        <i data-lucide="wallet"></i>
+                    </div>
+                </div>
+                <div class="stat-value">₹{{ yearly_revenue or 0 }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= DOUGHNUT CHART ================= -->
+    <div class="card chart-card">
+        <h3 style="text-align:center; margin-bottom: 25px; color: var(--secondary); font-size: 18px;">Total Revenue Breakdown</h3>
+        <canvas id="revenueChart"></canvas>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script id="revenue-data" type="application/json">
+    {{ {
+        "weekly": weekly_revenue or 0,
+        "monthly": monthly_revenue or 0,
+        "yearly": yearly_revenue or 0
+    } | tojson }}
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const chartDataElt = document.getElementById("revenue-data");
+            if (chartDataElt) {
+                const revenueData = JSON.parse(chartDataElt.textContent);
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Weekly', 'Monthly', 'Yearly'],
+                        datasets: [{
+                            data: [
+                                revenueData.weekly,
+                                revenueData.monthly,
+                                revenueData.yearly
+                            ],
+                            backgroundColor: [
+                                '#3b82f6',
+                                '#10b981',
+                                '#f59e0b'
+                            ],
+                            borderWidth: 3,
+                            borderColor: '#ffffff',
+                            hoverOffset: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 25,
+                                    usePointStyle: true,
+                                    font: {
+                                        family: 'Inter',
+                                        size: 13,
+                                        weight: '500'
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '65%'
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

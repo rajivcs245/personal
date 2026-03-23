@@ -1,0 +1,38 @@
+/* ================= REPORT CARDS ================= */
+.total-spending-card {
+    background: linear-gradient(135deg, var(--primary), #2563eb);
+    color: white;
+    padding: 32px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-md);
+}
+
+.total-spending-card h3 {
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.total-spending-card .amount {
+    font-size: 36px;
+    font-weight: 700;
+}
+
+/* ================= ANALYTICS CARD ================= */
+.chart-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.card h3 {
+    color: var(--secondary);
+    font-weight: 700;
+    margin-bottom: 24px;
+}

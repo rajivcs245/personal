@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Spending Insights{% endblock %}
+
+{% block extra_css %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .total-spending-card {
+            background: linear-gradient(135deg, var(--primary), #2563eb);
+            color: white;
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .spending-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .spending-amount {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .chart-box {
+            max-width: 500px;
+            margin: 20px auto;
+        }
+    </style>
+{% endblock %}
+
+{% block page_title %}Financial Insights{% endblock %}
+{% block page_subtitle %}Analysis of your platform spending and service usage{% endblock %}
+
+{% block content %}
+    <div class="total-spending-card">
+        <div>
+            <div class="spending-label">Cumulative Spending (2026)</div>
+            <div class="spending-amount">₹{{ yearly_spending or 0 }}</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.2); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="trending-up" style="width: 32px; height: 32px;"></i>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="text-align: center; margin-bottom: 30px; color: var(--secondary); font-size: 18px;">Spending Distribution by Service</h3>
+
+        <div class="chart-box">
+            <canvas id="spendingDoughnutChart"></canvas>
+        </div>
+
+        {% if not service_labels %}
+        <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+            No data available to generate charts.
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script id="chart-data" type="application/json">
+        {{ {
+            "labels": service_labels or [],
+            "amounts": service_amounts or []
+        } | tojson | safe }}
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const chartDataElt = document.getElementById('chart-data');
+            if (chartDataElt) {
+                const chartData = JSON.parse(chartDataElt.textContent);
+                const serviceLabels = chartData.labels;
+                const serviceAmounts = chartData.amounts;
+
+                if (serviceLabels && serviceLabels.length > 0) {
+                    const ctx = document.getElementById('spendingDoughnutChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: serviceLabels,
+                            datasets: [{
+                                data: serviceAmounts,
+                                backgroundColor: [
+                                    '#3b82f6',
+                                    '#10b981',
+                                    '#f59e0b',
+                                    '#ef4444',
+                                    '#8b5cf6',
+                                    '#14b8a6'
+                                ],
+                                borderWidth: 3,
+                                borderColor: '#ffffff',
+                                hoverOffset: 15
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 25,
+                                        usePointStyle: true,
+                                        font: {
+                                            family: 'Inter',
+                                            size: 13,
+                                            weight: '500'
+                                        }
+                                    }
+                                }
+                            },
+                            cutout: '65%'
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+{% endblock %}

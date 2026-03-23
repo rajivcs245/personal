@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <!-- Login CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <!-- Professional Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <div class="login-container animate-fade-in">
+
+        <!-- Login Card -->
+        <div class="login-card">
+
+            <h2 style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                <i data-lucide="shield-check" style="width: 32px; height: 32px; color: var(--primary);"></i> Login
+            </h2>
+
+            <!--  Flash Popup Message Box -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, msg in messages %}
+            <div class="popup-message {{ category }}">
+                {{ msg }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <!--  Role Tabs -->
+            <div class="tabs">
+                <button type="button" class="tab active" onclick="selectRole(event,'user')">
+                    User
+                </button>
+
+                <button type="button" class="tab" onclick="selectRole(event,'provider')">
+                    Provider
+                </button>
+
+                <button type="button" class="tab" onclick="selectRole(event,'admin')">
+                    Admin
+                </button>
+            </div>
+
+            <!--  Login Form -->
+            <form method="POST" action="{{ url_for('auth.login') }}">
+
+                <!-- Hidden Role Input -->
+                <input type="hidden" name="role" id="role" value="user">
+
+                <!-- Email -->
+                <label>Registered Email Address:</label>
+                <input type="email" name="email" placeholder="e.g. name@example.com" value="{{ email or '' }}" required autocomplete="off">
+
+                <!-- Password -->
+                <label>Password:</label>
+                <div class="password-field">
+                    <input type="password" name="password" id="password" placeholder="Enter your password" required
+                        autocomplete="current-password">
+                    <span class="toggle-password" onclick="toggleVisibility('password', 'eye-icon-login')">
+                        <i data-lucide="eye" id="eye-icon-login" style="width: 20px; height: 20px;"></i>
+                    </span>
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+
+            <!-- Links -->
+            <p class="small-text">
+                New user? <a href="{{ url_for('auth.signup') }}">Create an account</a>
+            </p>
+            <p class="small-text">
+                <a href="{{ url_for('auth.forgot_password') }}">Forgot your password?</a>
+            </p>
+
+        </div>
+    </div>
+
+    <!--  JavaScript -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function selectRole(event, role) {
+            // Update hidden role field
+            document.getElementById("role").value = role;
+
+            // Remove active class from all tabs
+            let tabs = document.querySelectorAll(".tab");
+            tabs.forEach(tab => tab.classList.remove("active"));
+
+            // Add active class to clicked tab
+            event.target.classList.add("active");
+        }
+
+        function toggleVisibility(fieldId, iconId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(iconId);
+
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                field.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            // Re-render only the changed icon
+            lucide.createIcons();
+        }
+    </script>
+
+</body>
+
+</html>

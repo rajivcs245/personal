@@ -1,0 +1,47 @@
+/* =========================
+   NOTIFICATION TILES
+========================= */
+.notification-list {
+    max-width: 800px;
+    list-style: none;
+    padding: 0;
+}
+
+.notification-item {
+    background: white;
+    padding: 24px;
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+    border-left: 4px solid var(--primary);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.notification-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
+}
+
+.notification-item .message {
+    font-size: 15px;
+    color: var(--secondary);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.notification-item .time {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.no-data {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Profile{% endblock %}
+
+{% block page_title %}Administrative Account{% endblock %}
+{% block page_subtitle %}Manage your platform identity and account settings{% endblock %}
+
+{% block content %}
+<form action="{{ url_for('admin.update_admin_profile') }}" method="POST" enctype="multipart/form-data">
+    <div class="profile-container">
+        <!-- Sidebar: Profile Photo -->
+        <div class="profile-sidebar">
+            <div class="avatar-wrapper">
+                <img src="{{ url_for('static', filename='uploads/profiles/' + profile_photo) }}"
+                    class="avatar-img" id="avatarPreview" alt="Profile Photo">
+                <label for="photoInput" class="avatar-edit-label">
+                    <i data-lucide="camera" style="width: 20px; height: 20px;"></i>
+                </label>
+                <input type="file" id="photoInput" name="photo" accept="image/*" style="display: none;"
+                    onchange="previewImage(event)">
+            </div>
+            
+            <h2 style="color: var(--secondary); margin-bottom: 5px; font-size: 22px; font-weight: 800;">{{ admin_name }}</h2>
+            <p style="color: var(--text-muted); font-size: 14px; font-weight: 500; margin-bottom: 24px;">Head Administrator</p>
+
+            {% if profile_photo != "default.png" %}
+            <button type="button" class="btn btn-outline" onclick="removePhoto()" style="width: 100%; color: var(--danger); border-color: hsla(0, 84%, 60%, 0.1);">
+                <i data-lucide="trash-2" style="width: 16px;"></i> Remove Photo
+            </button>
+            {% endif %}
+        </div>
+
+        <!-- Content: Profile Details -->
+        <div class="profile-content-card">
+            <div style="margin-bottom: 32px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;">
+                <h3 style="color: var(--secondary); font-weight: 800;">Identity Management</h3>
+                <p style="color: var(--text-muted); font-size: 14px;">Manage your administrative credentials</p>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <div>
+                    <label class="form-label">Administrative Name</label>
+                    <input type="text" name="name" class="form-input" value="{{ admin_name }}" required
+                        placeholder="Your full name">
+                </div>
+
+                <div>
+                    <label class="form-label">System Account Email</label>
+                    <input type="email" class="form-input" value="{{ email }}" readonly style="background: #f8fafc; cursor: not-allowed;">
+                </div>
+
+                <div>
+                    <label class="form-label">Bio / Notes</label>
+                    <textarea name="description" class="form-input" rows="5"
+                        placeholder="Brief description of your role...">{{ admin_description }}</textarea>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #f1f5f9;">
+                <button type="submit" class="btn btn-primary" style="padding: 14px 32px;">
+                    <i data-lucide="save" style="width: 18px;"></i> Update Admin Profile
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form id="removePhotoForm" action="{{ url_for('admin.remove_admin_photo') }}" method="POST" style="display:none;"></form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const output = document.getElementById('avatarPreview');
+            output.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function removePhoto() {
+        if (confirm("Are you sure you want to remove your profile photo?")) {
+            document.getElementById('removePhotoForm').submit();
+        }
+    }
+</script>
+{% endblock %}

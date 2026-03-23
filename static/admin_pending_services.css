@@ -1,0 +1,131 @@
+.main-content h2 {
+    margin-bottom: 30px;
+    font-size: 26px;
+    color: #1e293b;
+}
+
+/* ================= TABLE ================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+}
+
+thead {
+    background: #3b82f6;
+    color: white;
+}
+
+thead th {
+    padding: 15px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+tbody td {
+    padding: 14px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+.no-data {
+    padding: 25px;
+    font-weight: 500;
+    color: #64748b;
+    text-align: center;
+}
+
+/* ================= STATUS BADGE ================= */
+.status {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status.active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status.deactivated {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* ================= BUTTONS ================= */
+.btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 0 4px;
+    display: inline-block;
+}
+
+.btn.accept {
+    background: #22c55e;
+    color: white;
+}
+
+.btn.accept:hover {
+    background: #16a34a;
+    transform: scale(1.05);
+}
+
+.btn.reject {
+    background: #ef4444;
+    color: white;
+}
+
+.btn.reject:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+/* ================= SCROLLBAR ================= */
+.content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 992px) {
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .nav-link {
+        margin-right: 10px;
+    }
+
+    .content {
+        padding: 25px;
+    }
+}

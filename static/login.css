@@ -1,0 +1,200 @@
+/* ===============================
+   GLOBAL RESET
+================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* ===============================
+   BACKGROUND (BLUE GRADIENT)
+================================ */
+body {
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #2563eb, #1e40af);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ===============================
+   LOGIN CARD CONTAINER
+================================ */
+.login-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    width: 420px;
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+    text-align: center;
+}
+
+/* Title */
+.login-card h2 {
+    font-size: 26px;
+    margin-bottom: 20px;
+    color: #1e293b;
+}
+
+/* ===============================
+   TABS
+================================ */
+.tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.tab {
+    flex: 1;
+    margin: 0 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #e5e7eb;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.tab.active {
+    background: #2563eb;
+    color: white;
+}
+
+/* ===============================
+   FORM INPUTS
+================================ */
+form {
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+input {
+    width: 100%;
+    padding: 11px;
+    margin-top: 6px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+/* ===============================
+   PASSWORD VISIBILITY TOGGLE
+================================ */
+.password-field {
+    position: relative;
+    width: 100%;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+    user-select: none;
+    z-index: 10;
+}
+
+.toggle-password:hover {
+    color: #2563eb;
+}
+
+/* Ensure input padding doesn't overlap toggle */
+input[type="password"],
+input[type="text"] {
+    padding-right: 45px !important;
+}
+
+/* ===============================
+   LOGIN BUTTON
+================================ */
+.btn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(to right, #2563eb, #1e40af);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(to right, #1d4ed8, #1e3a8a);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* ===============================
+   SIGNUP LINK
+================================ */
+.small-text {
+    margin-top: 18px;
+    font-size: 13px;
+    color: #475569;
+}
+
+.small-text a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.small-text a:hover {
+    text-decoration: underline;
+}
+
+.popup-message {
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Warning */
+.popup-message.warning {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #facc15;
+}
+
+/* Danger */
+.popup-message.danger {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #ef4444;
+}

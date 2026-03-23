@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}My Services{% endblock %}
+
+{% block page_title %}Manage My Services{% endblock %}
+{% block page_subtitle %}Add new service offerings or view existing ones{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div class="card glass" style="max-width: 650px; margin: 40px auto; padding: 60px 50px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <div style="background: hsla(221, 83%, 53%, 0.1); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i data-lucide="plus-circle" style="width: 32px; height: 32px; color: var(--primary);"></i>
+            </div>
+            <h2 style="font-size: 28px; font-weight: 800; color: var(--secondary); letter-spacing: -1px;">Expand Your Reach</h2>
+            <p style="color: var(--text-muted); font-size: 15px;">Add a new service offering to your profile</p>
+        </div>
+
+        <!-- SERVICE FORM -->
+        <form method="POST" action="{{ url_for('provider.add_service') }}">
+            <div style="margin-bottom: 24px;">
+                <label class="form-label">Service Title</label>
+                <input type="text" name="service_name" class="form-input" placeholder="e.g. Premium Home Deep Cleaning" required>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label class="form-label">Service Area / Location</label>
+                <div style="position: relative;">
+                    <i data-lucide="map-pin" style="position: absolute; left: 16px; top: 14px; width: 18px; color: var(--text-muted);"></i>
+                    <input type="text" name="location" class="form-input" placeholder="e.g. Coimbatore Central" style="padding-left: 48px;" required>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 40px;">
+                <label class="form-label">Base Cost (₹)</label>
+                <div style="position: relative;">
+                    <span style="position: absolute; left: 16px; top: 12px; font-weight: 700; color: var(--text-muted);">₹</span>
+                    <input type="number" name="cost" class="form-input" placeholder="0.00" style="padding-left: 36px;" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 16px;">
+                <i data-lucide="send" style="width: 18px;"></i>
+                Create Service Request
+            </button>
+        </form>
+
+        <!-- INFO NOTE -->
+        <div style="margin-top: 40px; padding: 24px; background: white; border-radius: var(--radius-md); border: 1px solid var(--glass-border); display: flex; gap: 16px; align-items: flex-start; box-shadow: var(--shadow-sm);">
+            <div style="background: hsla(221, 83%, 53%, 0.1); padding: 8px; border-radius: 10px;">
+                <i data-lucide="info" style="width: 20px; height: 20px; color: var(--primary);"></i>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+                <strong style="color: var(--secondary); display: block; margin-bottom: 4px;">Approval Process</strong>
+                All entries are reviewed for quality assurance. Approved services typically go live within 24 hours of submission.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

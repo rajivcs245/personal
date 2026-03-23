@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
+{% endblock %}
+
+{% block page_title %}Administrator Dashboard{% endblock %}
+{% block page_subtitle %}Manage providers, services, and platform analytics{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <!-- ================= STATS ================= -->
+    <div class="stat-grid">
+        <div class="card">
+            <div class="stat-header">
+                <span class="stat-label">Total Providers</span>
+                <div class="stat-icon" style="background: var(--primary-light-bg); color: var(--primary);">
+                    <i data-lucide="users" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ provider_count }}</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-header">
+                <span class="stat-label">Total Users</span>
+                <div class="stat-icon" style="background: var(--success-light); color: var(--success);">
+                    <i data-lucide="user-plus" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ user_count }}</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-header">
+                <span class="stat-label">Active Services</span>
+                <div class="stat-icon" style="background: var(--warning-light); color: #f59e0b;">
+                    <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="stat-value" style="color: var(--primary);">{{ service_count }}</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-header">
+                <span class="stat-label">Total Revenue</span>
+                <div class="stat-icon" style="background: var(--success-light); color: var(--success);">
+                    <i data-lucide="indian-rupee" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="stat-value" style="color: var(--success);">₹{{ total_revenue }}</div>
+        </div>
+    </div>
+
+
+    <div style="margin-top: 40px;">
+        <h3 style="margin-bottom: 20px;">Recent System Bookings</h3>
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>User</th>
+                        <th>Service</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in recent_bookings %}
+                    <tr>
+                        <td>#BK-{{ b.id }}</td>
+                        <td style="font-weight: 500;">{{ b.user_name }}</td>
+                        <td>{{ b.service_name }}</td>
+                        <td style="font-weight: 600; color: var(--success);">₹{{ b.amount }}</td>
+                        <td>
+                            <span class="badge {{ b.status.lower() }}">{{ b.status }}</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">No
+                            recent bookings.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================= QUICK ACTIONS ================= -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 40px;">
+        <a href="{{ url_for('admin.manage_providers') }}" class="card"
+            style="text-decoration: none; color: inherit; border-top: 4px solid var(--primary); text-align: left; align-items: flex-start;">
+            <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+                <i data-lucide="users" style="color: var(--primary);"></i> Manage Providers
+            </h3>
+            <p style="color: var(--text-muted); font-size: 14px;">Activate, deactivate or view all service
+                providers registered on the platform.</p>
+        </a>
+
+
+        <a href="{{ url_for('admin.admin_report') }}" class="card"
+            style="text-decoration: none; color: inherit; border-top: 4px solid var(--success); text-align: left; align-items: flex-start;">
+            <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+                <i data-lucide="bar-chart-3" style="color: var(--success);"></i> Business Reports
+            </h3>
+            <p style="color: var(--text-muted); font-size: 14px;">View comprehensive weekly, monthly, and yearly
+                revenue and booking statistics.</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='user_notifications.css') }}">
+{% endblock %}
+
+{% block page_title %}Recent Notifications{% endblock %}
+{% block page_subtitle %}Stay updated with your service requests and platform activity{% endblock %}
+
+{% block content %}
+    <div class="card">
+        {% if notifications %}
+        <ul class="notification-list">
+            {% for n in notifications %}
+            <li class="notification-item">
+                <div class="message">
+                    {{ n.message }}
+                </div>
+                <div class="time">
+                    <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+                    {{ n.created_at }}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="no-data" style="text-align: center; padding: 60px;">
+            <i data-lucide="bell-off"
+                style="width: 64px; height: 64px; margin: 0 auto 20px; color: var(--text-muted); opacity: 0.3;"></i>
+            <h3 style="color: var(--secondary);">No notifications yet</h3>
+            <p style="margin-top: 8px; color: var(--text-muted);">We'll notify you here about your upcoming bookings and account activity.</p>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

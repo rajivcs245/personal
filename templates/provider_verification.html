@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Identity Verification{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .verification-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #f1f5f9;
+        }
+
+        .section-header {
+            font-size: 18px;
+            color: var(--secondary);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 20px;
+            border-bottom: 1.5px solid #f8fafc;
+            font-weight: 700;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .upload-zone {
+            border: 2px dashed #e2e8f0;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #f8fafc;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: #f0f7ff;
+            transform: translateY(-2px);
+        }
+
+        .upload-icon-box {
+            width: 60px;
+            height: 60px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .file-status {
+            margin-top: 20px;
+            padding: 12px 18px;
+            background: #ecfdf5;
+            color: #065f46;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+    </style>
+{% endblock %}
+
+{% block page_title %}Account Verification{% endblock %}
+{% block page_subtitle %}Securely upload your credentials to unlock business features{% endblock %}
+
+{% block content %}
+    <div class="verification-container">
+        <form action="{{ url_for('provider.submit_verification') }}" method="POST" enctype="multipart/form-data">
+            
+            <!-- Business Details -->
+            <div class="form-section">
+                <div class="section-header">
+                    <i data-lucide="building-2" style="color: var(--primary);"></i>
+                    Professional Business Identity
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label">Legal Trading Name</label>
+                        <input type="text" name="business_name" class="form-input"
+                            value="{{ provider.business_name or '' }}" required
+                            placeholder="e.g. Master Cleaners Pvt Ltd">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Primary Business Contact</label>
+                        <input type="tel" name="phone" class="form-input" value="{{ provider.phone or '' }}"
+                            required placeholder="+91 88**** **10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Full Trading Address</label>
+                        <input type="text" name="address" class="form-input"
+                            value="{{ provider.address or '' }}" required
+                            placeholder="Official office or home base">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents -->
+            <div class="form-section">
+                <div class="section-header">
+                    <i data-lucide="shield-check" style="color: var(--success);"></i>
+                    Government ID & Tax Details
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Type of Document</label>
+                        <select class="form-input" name="id_type" required>
+                            <option value="aadhar" {% if provider.id_type == 'aadhar' %}selected{% endif %}>Aadhar Card</option>
+                            <option value="pan" {% if provider.id_type == 'pan' %}selected{% endif %}>PAN Card</option>
+                            <option value="voter" {% if provider.id_type == 'voter' %}selected{% endif %}>Voter ID</option>
+                            <option value="license" {% if provider.id_type == 'license' %}selected{% endif %}>Driving License</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Document Identification Number</label>
+                        <input type="text" name="id_proof_number" class="form-input"
+                            value="{{ provider.id_proof_number or '' }}" required placeholder="XXXX-XXXX-XXXX">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Digital Proof (Photo/Scan)</label>
+                        <div class="upload-zone" onclick="document.getElementById('id_input').click()">
+                            <div class="upload-icon-box">
+                                <i data-lucide="upload-cloud" style="width: 28px; height: 28px;"></i>
+                            </div>
+                            <p style="font-weight: 700; color: var(--secondary); margin-bottom: 5px;">Click to select file</p>
+                            <p style="color: var(--text-muted); font-size: 13px;">PDF, PNG, or JPG accepted. Max size 5MB.</p>
+
+                            <input type="file" id="id_input" name="id_proof_image" style="display: none;" onchange="handleFile(this)">
+
+                            <div id="fileBox" class="file-status" {% if not provider.id_proof_image %}style="display:none;" {% endif %}>
+                                <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i>
+                                <span id="fileName">{% if provider.id_proof_image %}{{ provider.id_proof_image }}{% endif %}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; padding-bottom: 50px;">
+                <button type="submit" class="btn btn-primary" style="padding: 16px 40px; font-size: 16px;">
+                    <i data-lucide="check-circle-2" style="margin-right: 10px;"></i>
+                    {% if is_docs_uploaded %}Update Verification{% else %}Submit Verification Request{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        function handleFile(input) {
+            if (input.files && input.files[0]) {
+                const nameElt = document.getElementById('fileName');
+                const boxElt = document.getElementById('fileBox');
+                nameElt.innerText = input.files[0].name;
+                boxElt.style.display = 'inline-flex';
+            }
+        }
+    </script>
+{% endblock %}

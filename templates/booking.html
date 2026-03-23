@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Booking{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .booking-page-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .summary-card {
+            background: #f8fafc;
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        .summary-item:last-child {
+            margin-bottom: 0;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 18px;
+        }
+        .label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+    </style>
+{% endblock %}
+
+{% block page_title %}Complete Your Booking{% endblock %}
+{% block page_subtitle %}Review service details and select a preferred time slot{% endblock %}
+
+{% block content %}
+<div class="booking-page-container">
+    <div class="card">
+        <h3 style="margin-bottom: 20px; color: var(--secondary);">Service Summary</h3>
+        
+        <div class="summary-card">
+            <div class="summary-item">
+                <span class="label">Service Name</span>
+                <span>{{ service.service_name }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Provider</span>
+                <span>{{ service.provider_name }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Location</span>
+                <span>{{ service.location }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Total Amount</span>
+                <span>₹{{ service.cost }}</span>
+            </div>
+        </div>
+
+        <form method="POST" id="bookingForm">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label">Preferred Date</label>
+                <input type="date" id="booking_date" name="booking_date" class="form-input" 
+                    value="{{ selected_date }}" min="{{ today }}" required style="width: 100%;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label class="form-label">Available Time Slots</label>
+                <select id="time_slot" name="time_slot" class="form-input" required style="width: 100%;">
+                    {% if available_slots %}
+                    <option value="">-- Choose a Slot --</option>
+                    {% for slot in available_slots %}
+                    <option value="{{ slot }}">{{ slot }}</option>
+                    {% endfor %}
+                    {% else %}
+                    <option value="">No slots available for this date</option>
+                    {% endif %}
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <a href="{{ url_for('user.user_dashboard') }}" class="btn" style="flex: 1; justify-content: center; background: #f1f5f9; color: var(--secondary);">
+                    Cancel
+                </a>
+                <button type="submit" id="confirmBtn" class="btn btn-primary" style="flex: 2; justify-content: center;" disabled>
+                    <i data-lucide="check-circle" style="margin-right: 8px;"></i>
+                    Confirm & Book Now
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const dateInput = document.getElementById("booking_date");
+            const slotSelect = document.getElementById("time_slot");
+            const confirmBtn = document.getElementById("confirmBtn");
+
+            // Reload page when date changes
+            dateInput.addEventListener("change", function () {
+                const selectedDate = this.value;
+                const url = new URL(window.location.href);
+                url.searchParams.set("booking_date", selectedDate);
+                window.location.href = url.toString();
+            });
+
+            // Enable confirm button only if slot selected
+            slotSelect.addEventListener("change", function () {
+                confirmBtn.disabled = this.value === "";
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Notifications{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .notification-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .notification-item {
+            padding: 24px;
+            background: white;
+            border-radius: var(--radius-md);
+            border: 1px solid #f1f5f9;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .notification-item:hover {
+            border-color: var(--primary-light);
+            background: #f8fafc;
+            transform: translateX(4px);
+        }
+
+        .msg-box {
+            flex: 1;
+        }
+
+        .msg-text {
+            font-size: 15px;
+            color: var(--secondary);
+            font-weight: 500;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .msg-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .msg-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block page_title %}Admin Notifications{% endblock %}
+{% block page_subtitle %}Official updates and account actions from the administration team{% endblock %}
+
+{% block content %}
+    <div class="card" style="min-height: 400px; padding: 40px;">
+        {% if notifications %}
+        <ul class="notification-list">
+            {% for n in notifications %}
+            <li class="notification-item">
+                <div class="msg-icon">
+                    <i data-lucide="bell"></i>
+                </div>
+                <div class="msg-box">
+                    <div class="msg-text">
+                        {{ n.message }}
+                    </div>
+                    <div class="msg-time">
+                        <i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
+                        {{ n.created_at }}
+                    </div>
+                </div>
+                <div style="color: var(--primary); opacity: 0.3;">
+                    <i data-lucide="chevron-right"></i>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div style="text-align: center; padding: 80px 20px; color: var(--text-muted);">
+            <div style="background: #f8fafc; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i data-lucide="bell-off" style="width: 40px; height: 40px; opacity: 0.3;"></i>
+            </div>
+            <h3 style="color: var(--secondary); margin-bottom: 8px;">No Admin Actions Yet</h3>
+            <p style="font-size: 14px;">Your account activity is current. Profile approvals and service updates will appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

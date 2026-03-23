@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Business Profile{% endblock %}
+
+{% block page_title %}Service Provider Profile{% endblock %}
+{% block page_subtitle %}Update your professional branding and business information{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <form action="{{ url_for('provider.update_provider_profile') }}" method="POST" enctype="multipart/form-data">
+        <div class="profile-container">
+            <!-- Sidebar: Logo -->
+            <div class="profile-sidebar">
+                <div class="avatar-wrapper">
+                    <img src="{{ url_for('static', filename='uploads/profiles/' + profile_photo) }}"
+                        class="avatar-img" id="avatarPreview" alt="Brand Logo">
+                    <label for="photoInput" class="avatar-edit-label">
+                        <i data-lucide="camera" style="width: 18px;"></i>
+                    </label>
+                    <input type="file" id="photoInput" name="photo" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                </div>
+                
+                <h2 style="color: var(--secondary); font-weight: 800; letter-spacing: -1px; margin-bottom: 4px;">{{ provider_name }}</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Verified Service Provider</p>
+
+                {% if profile_photo != "default.png" %}
+                <button type="button" class="btn btn-outline" onclick="removePhoto()" style="width: 100%; color: var(--danger); border-color: hsla(0, 84%, 60%, 0.1);">
+                    <i data-lucide="trash-2" style="width: 16px;"></i> Remove Logo
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- Content -->
+            <div class="profile-content-card">
+                <div style="margin-bottom: 32px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;">
+                    <h3 style="color: var(--secondary); font-weight: 800;">Business Branding</h3>
+                    <p style="color: var(--text-muted); font-size: 14px;">Market your services with professional details</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <div>
+                        <label class="form-label">Professional Brand Name</label>
+                        <input type="text" name="name" class="form-input" value="{{ provider_name }}" required>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Official Business Email</label>
+                        <input type="email" class="form-input" value="{{ email }}" readonly style="background: #f8fafc; cursor: not-allowed;">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Business Bio / Expertise</label>
+                        <textarea name="description" class="form-input" rows="6" placeholder="Describe your professional experience and service specializations...">{{ provider_description }}</textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #f1f5f9;">
+                    <button type="submit" class="btn btn-primary" style="padding: 14px 32px;">
+                        <i data-lucide="save" style="width: 18px;"></i> Update Business Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<form id="removePhotoForm" action="{{ url_for('provider.remove_provider_photo') }}" method="POST" style="display:none;"></form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const output = document.getElementById('avatarPreview');
+            output.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function removePhoto() {
+        if (confirm("Permanently remove your business branding logo?")) {
+            document.getElementById('removePhotoForm').submit();
+        }
+    }
+</script>
+{% endblock %}

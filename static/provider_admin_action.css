@@ -1,0 +1,101 @@
+/* =========================
+   NOTIFICATION BADGE
+========================= */
+.badge {
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 12px;
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+.content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.content h2 {
+    margin-bottom: 25px;
+    color: #111827;
+    font-size: 26px;
+}
+
+/* =========================
+   NOTIFICATION LIST
+========================= */
+.notification-list {
+    list-style: none;
+}
+
+.notification-item {
+    background-color: #ffffff;
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border-left: 4px solid #2563eb;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+    transition: 0.3s ease;
+}
+
+.notification-item:hover {
+    transform: translateY(-3px);
+}
+
+.notification-item .message {
+    font-size: 15px;
+    color: #1f2937;
+    margin-bottom: 6px;
+}
+
+.notification-item .time {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.no-data {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        padding: 15px;
+    }
+
+    .sidebar .logo {
+        display: none;
+    }
+
+    .sidebar .nav-link {
+        margin: 0;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    .content {
+        padding: 25px;
+    }
+}
