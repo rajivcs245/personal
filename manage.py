@@ -81,23 +81,55 @@ def debug_db():
     except Exception as e:
         print(f"Debug Error: {e}")
 
+def check_db():
+    \"\"\"Minimal DB check for active users.\"\"\"
+    print(\"\\n--- QUICK DB CHECK ---\")
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT email, is_active FROM users LIMIT 5')
+        results = cur.fetchall()
+        for res in results:
+            print(f\"User: {res['email']} | Active: {res['is_active']}\")
+        conn.close()
+    except Exception as e:
+        print(f\"DB Check Error: {e}\")
+
+def check_schema(table_name='users'):
+    \"\"\"Displays the CREATE TABLE statement for a given table.\"\"\"
+    print(f\"\\n--- SCHEMA FOR {table_name.upper()} ---\")
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(f'SHOW CREATE TABLE {table_name}')
+        res = cur.fetchone()
+        print(res.get(\"Create Table\", \"No schema found.\"))
+        conn.close()
+    except Exception as e:
+        print(f\"Schema Check Error: {e}\")
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python manage.py [routes|users|debug]")
+        print(\"Usage: python manage.py [routes|users|debug|migrate|check|schema]\")
         return
 
     command = sys.argv[1].lower()
-    if command == "routes":
+    if command == \"routes\":
         list_routes()
-    elif command == "users":
+    elif command == \"users\":
         list_users()
-    elif command == "debug":
+    elif command == \"debug\":
         debug_db()
-    elif command == "migrate":
+    elif command == \"migrate\":
         migrate_passwords()
+    elif command == \"check\":
+        check_db()
+    elif command == \"schema\":
+        table = sys.argv[2] if len(sys.argv) > 2 else 'users'
+        check_schema(table)
     else:
-        print(f"Unknown command: {command}")
-        print("Available commands: routes, users, debug, migrate")
+        print(f\"Unknown command: {command}\")
+        print(\"Available commands: routes, users, debug, migrate, check, schema\")
 
-if __name__ == "__main__":
+if __name__ == \"__main__\":
     main()

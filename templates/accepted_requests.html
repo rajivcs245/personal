@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <title>Accepted Requests</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='accepted_requests.css') }}">
+    <meta charset="UTF-8">
+    <title>Accepted Requests</title>
 </head>
 
 <body>
@@ -37,8 +37,8 @@
         <!-- ================= CONTENT ================= -->
         <div class="content">
             <h2>Accepted Booking Requests</h2>
-
-            <table>
+            <div class="table-responsive">
+                <table class="table">
                 <thead>
                     <tr>
                         <th>Service Name</th>
@@ -67,6 +67,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
 
         </div>
 </body>

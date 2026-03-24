@@ -628,6 +628,84 @@ body {
     border: 1px solid #f59e0b;
 }
 
+.menu-toggle {
+    display: none;
+}
+
+/* ================= COMPONENT SCYLES (DASHBOARDS) ================= */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.service-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 30px;
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+    transition: var(--transition);
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+}
+
+.service-card h3 {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: var(--secondary);
+    letter-spacing: -0.5px;
+}
+
+.price {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 20px 0;
+    color: var(--primary);
+}
+
+.service-card .btn-primary {
+    margin-top: auto;
+    width: 100%;
+    padding: 14px;
+}
+
+.roadmap-step {
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+}
+
+.roadmap-step:hover { background: white; box-shadow: var(--shadow-md); }
+
+.status-icon {
+    width: 44px; height: 44px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; background: white; box-shadow: var(--shadow-sm);
+    color: var(--text-muted);
+}
+
+.status-icon.complete { background: hsla(158, 77%, 41%, 0.1); color: var(--success); }
+
+.chart-wrapper { max-width: 500px; margin: 40px auto; padding: 30px; }
+
+canvas {
+    margin-top: 20px; background: white; padding: 25px;
+    border-radius: 16px; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+}
+
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1024px) {
     :root {
@@ -736,7 +814,4 @@ body {
         padding: 30px 20px;
     }
 }
-
-.menu-toggle {
-    display: none;
-}
+

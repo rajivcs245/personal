@@ -15,8 +15,8 @@ def signup():
         password = request.form['password']
         role = request.form['role']
 
-        if len(password) < 6:
-            flash("Password must be at least 6 characters long.", "danger")
+        if len(password) < 8 or not any(c.isdigit() for c in password) or not any(c.isalpha() for c in password):
+            flash("❌ Password must be at least 8 characters and contain both letters and numbers.", "danger")
             return redirect(url_for('auth.signup'))
 
         conn = get_db_connection()
@@ -66,7 +66,7 @@ def login():
             # 2. Check the password
             elif check_password_hash(user['password'], password):
                 # 3. Check if account is active
-                if 'is_active' in user and not user['is_active']:
+                if 'is_active' in user and user['is_active'] == 0:
                     flash("❌ Your account has been deactivated by the administrator. Please contact support.", "danger")
                     return redirect(url_for('auth.login'))
 
@@ -97,30 +97,28 @@ def logout():
 def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email')
-        new_password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
         
-        if new_password != confirm_password:
-            flash("❌ Passwords do not match!", "danger")
-            return render_template('forgot_password_form.html', email=email)
-            
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("SELECT id FROM users WHERE email=%s", (email,))
         user = cur.fetchone()
         
         if user:
-            hashed_pw = generate_password_hash(new_password)
-            # Directly update without requiring a token
+            # Generate a secure token
+            token = secrets.token_urlsafe(32)
+            expiry = datetime.now() + timedelta(hours=1)
+            
             cur.execute("""
                 UPDATE users 
-                SET password=%s, reset_token=NULL, token_expiry=NULL 
+                SET reset_token=%s, token_expiry=%s 
                 WHERE id=%s
-            """, (hashed_pw, user['id']))
+            """, (token, expiry, user['id']))
             conn.commit()
             conn.close()
-            flash("✅ Password updated successfully! You can now login with your new password.", "success")
-            return redirect(url_for('auth.login'))
+            
+            # Since we can't send real emails, we flash the link for dev/testing
+            flash(f"✅ Reset link generated (Simulated Email): Reset Token is {token}", "success")
+            return redirect(url_for('auth.reset_password', email=email))
         else:
             conn.close()
             flash("❌ That email address is not registered.", "danger")

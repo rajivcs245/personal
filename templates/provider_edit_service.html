@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Service{% endblock %}
+
+{% block page_title %}Service Management / Edit{% endblock %}
+{% block page_subtitle %}Update your service details. Note: Edits require admin re-approval.{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in" style="max-width: 800px; margin: 0 auto;">
+    <div class="card glass" style="padding: 40px;">
+        <form action="{{ url_for('provider.edit_service', service_id=service.id) }}" method="POST">
+            <div class="form-group" style="margin-bottom: 25px;">
+                <label for="service_name" style="display: block; margin-bottom: 10px; font-weight: 700; color: var(--secondary);">Service Name</label>
+                <input type="text" id="service_name" name="service_name" class="form-input" 
+                       value="{{ service.service_name }}" required style="width: 100%;"
+                       placeholder="e.g., Deep House Cleaning">
+            </div>
+
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                <div class="form-group">
+                    <label for="location" style="display: block; margin-bottom: 10px; font-weight: 700; color: var(--secondary);">Location</label>
+                    <input type="text" id="location" name="location" class="form-input" 
+                           value="{{ service.location }}" required style="width: 100%;"
+                           placeholder="e.g., Mumbai, MH">
+                </div>
+                <div class="form-group">
+                    <label for="cost" style="display: block; margin-bottom: 10px; font-weight: 700; color: var(--secondary);">Cost (₹)</label>
+                    <input type="number" id="cost" name="cost" class="form-input" 
+                           value="{{ service.cost }}" required style="width: 100%;"
+                           placeholder="0.00">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 20px;">
+                <a href="{{ url_for('provider.provider_services') }}" class="btn btn-outline" style="min-width: 120px; justify-content: center;">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary" style="min-width: 160px; justify-content: center;">
+                    <i data-lucide="save" style="margin-right: 8px;"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="alert warning" style="margin-top: 30px; display: flex; gap: 15px; align-items: flex-start; background: hsla(37, 91%, 55%, 0.1); border: 1px solid hsla(37, 91%, 55%, 0.2); padding: 20px; border-radius: var(--radius-md);">
+        <i data-lucide="info" style="color: #f59e0b; flex-shrink: 0;"></i>
+        <p style="font-size: 14px; color: #92400e; line-height: 1.5;">
+            <strong>Important:</strong> Changing the service details will set its status back to <strong>'Pending'</strong>. You will not be able to accept new bookings for this service until an administrator re-approves the updated details.
+        </p>
+    </div>
+</div>
+{% endblock %}

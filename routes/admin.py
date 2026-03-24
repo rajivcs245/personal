@@ -289,3 +289,32 @@ def admin_reject_provider(provider_id):
     conn.close()
     flash("Provider verification rejected.", "danger")
     return redirect(url_for('admin.admin_pending_verifications'))
+@admin_bp.route('/admin/manage_users')
+@login_required
+@role_required('admin')
+def manage_users():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, name, email, is_active, created_at FROM users WHERE role = 'user'")
+    users = cur.fetchall()
+    conn.close()
+    return render_template('admin_manage_users.html', users=users)
+
+@admin_bp.route('/admin/toggle_user_status/<int:target_user_id>')
+@login_required
+@role_required('admin')
+def toggle_user_status(target_user_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT role, is_active FROM users WHERE id = %s", (target_user_id,))
+    user = cur.fetchone()
+    if user and user['role'] == 'user':
+        new_status = 0 if user['is_active'] else 1
+        cur.execute("UPDATE users SET is_active = %s WHERE id = %s", (new_status, target_user_id))
+        conn.commit()
+        status_text = "Deactivated" if new_status == 0 else "Activated"
+        flash(f"User account {status_text} successfully.", "success")
+    else:
+        flash("Invalid User ID.", "danger")
+    conn.close()
+    return redirect(url_for('admin.manage_users'))

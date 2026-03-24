@@ -328,3 +328,100 @@ def submit_verification():
         return redirect(url_for('provider.provider_verification'))
     
     return redirect(url_for('provider.provider_verification'))
+@provider_bp.route('/edit_service/<int:service_id>', methods=['GET', 'POST'])
+@login_required
+@role_required('provider')
+def edit_service(service_id):
+    provider_id = session['user_id']
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Verify owner
+    cur.execute("SELECT * FROM services WHERE id = %s AND provider_id = %s", (service_id, provider_id))
+    service = cur.fetchone()
+    
+    if not service:
+        conn.close()
+        flash("Unauthorized or service not found.", "danger")
+        return redirect(url_for('provider.provider_services'))
+    
+    if request.method == 'POST':
+        name = request.form['service_name']
+        loc = request.form['location']
+        cost = request.form['cost']
+        
+        # Reset to Pending after every edit to ensure admin review of changes
+        cur.execute("""
+            UPDATE services 
+            SET service_name = %s, location = %s, cost = %s, status = 'Pending' 
+            WHERE id = %s
+        """, (name, loc, cost, service_id))
+        
+        conn.commit()
+        conn.close()
+        flash("Service updated successfully and sent for re-approval.", "success")
+        return redirect(url_for('provider.provider_services'))
+    
+    cur.execute("SELECT COUNT(*) AS notification_count FROM notifications WHERE provider_id = %s AND is_read = 0", (provider_id,))
+    notification_count = cur.fetchone()['notification_count']
+    conn.close()
+    return render_template('provider_edit_service.html', service=service, notification_count=notification_count)
+
+@provider_bp.route('/delete_service/<int:service_id>')
+@login_required
+@role_required('provider')
+def delete_service(service_id):
+    provider_id = session['user_id']
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Verify owner
+    cur.execute("SELECT id FROM services WHERE id = %s AND provider_id = %s", (service_id, provider_id))
+    if not cur.fetchone():
+        conn.close()
+        flash("Unauthorized or service not found.", "danger")
+        return redirect(url_for('provider.provider_services'))
+        
+    # Check for active bookings before deletion (soft constraint or delete cascade?)
+    cur.execute("SELECT COUNT(*) as count FROM bookings WHERE service_id = %s AND status = 'Confirmed'", (service_id,))
+    if cur.fetchone()['count'] > 0:
+        conn.close()
+        flash("Cannot delete service with active confirmed bookings.", "warning")
+        return redirect(url_for('provider.provider_services'))
+
+    cur.execute("DELETE FROM services WHERE id = %s", (service_id,))
+    conn.commit()
+    conn.close()
+    flash("Service deleted successfully.", "success")
+    return redirect(url_for('provider.provider_services'))
+@provider_bp.route('/provider_cancel_booking/<int:booking_id>', methods=['POST'])
+@login_required
+@role_required('provider')
+def provider_cancel_booking(booking_id):
+    provider_id = session['user_id']
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Verify ownership
+    cur.execute(\"\"\"
+        SELECT b.id, b.user_id, s.service_name, b.booking_date, b.time_slot 
+        FROM bookings b JOIN services s ON b.service_id = s.id 
+        WHERE b.id = %s AND s.provider_id = %s
+    \"\"\", (booking_id, provider_id))
+    
+    booking = cur.fetchone()
+    if not booking:
+        conn.close()
+        flash(\"Unauthorized or booking not found.\", \"danger\")
+        return redirect(url_for('provider.provider_dashboard'))
+
+    cur.execute(\"UPDATE bookings SET status = 'Cancelled' WHERE id = %s\", (booking_id,))
+    
+    # Notify User
+    msg = f\"❌ Your booking for {booking['service_name']} on {booking['booking_date']} at {booking['time_slot']} has been CANCELLED by the provider.\"
+    cur.execute(\"INSERT INTO user_notifications (user_id, message) VALUES (%s, %s)\", (booking['user_id'], msg))
+    
+    conn.commit()
+    conn.close()
+    flash(\"Booking cancelled successfully.\", \"success\")
+    return redirect(url_for('provider.provider_dashboard'))

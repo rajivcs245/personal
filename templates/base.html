@@ -49,7 +49,12 @@
 
                     <a href="{{ url_for('admin.manage_providers') }}"
                         class="nav-link {% if request.endpoint == 'admin.manage_providers' %}active{% endif %}">
-                        <i data-lucide="users" aria-hidden="true"></i> <span>Manage Providers</span>
+                        <i data-lucide="shield-user" aria-hidden="true"></i> <span>Manage Providers</span>
+                    </a>
+
+                    <a href="{{ url_for('admin.manage_users') }}"
+                        class="nav-link {% if request.endpoint == 'admin.manage_users' %}active{% endif %}">
+                        <i data-lucide="users" aria-hidden="true"></i> <span>Manage Customers</span>
                     </a>
 
                     <a href="{{ url_for('admin.admin_pending_verifications') }}"

@@ -125,6 +125,16 @@ body {
 
 .btn-print:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
+@media (max-width: 640px) {
+    body { padding: 20px 10px; }
+    .bill-container { padding: 30px 20px; }
+    .bill-header { flex-direction: column; gap: 20px; }
+    .invoice-meta { text-align: left; }
+    .bill-grid { grid-template-columns: 1fr; gap: 20px; }
+    .info-box { text-align: left !important; }
+    .amount-table { display: block; overflow-x: auto; white-space: nowrap; }
+}
+
 @media print {
     body { background: white; padding: 0; }
     .bill-container { box-shadow: none; border-radius: 0; padding: 0; }

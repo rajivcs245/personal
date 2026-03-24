@@ -7,7 +7,8 @@
 
 {% block content %}
 <div class="animate-fade-in">
-    <div class="card glass" style="max-width: 650px; margin: 40px auto; padding: 60px 50px;">
+    <!-- CREATE SERVICE FORM -->
+    <div class="card glass" style="max-width: 650px; margin: 0 auto 40px; padding: 60px 50px;">
         <div style="text-align: center; margin-bottom: 40px;">
             <div style="background: hsla(221, 83%, 53%, 0.1); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
                 <i data-lucide="plus-circle" style="width: 32px; height: 32px; color: var(--primary);"></i>
@@ -16,7 +17,6 @@
             <p style="color: var(--text-muted); font-size: 15px;">Add a new service offering to your profile</p>
         </div>
 
-        <!-- SERVICE FORM -->
         <form method="POST" action="{{ url_for('provider.add_service') }}">
             <div style="margin-bottom: 24px;">
                 <label class="form-label">Service Title</label>
@@ -45,15 +45,70 @@
             </button>
         </form>
 
-        <!-- INFO NOTE -->
         <div style="margin-top: 40px; padding: 24px; background: white; border-radius: var(--radius-md); border: 1px solid var(--glass-border); display: flex; gap: 16px; align-items: flex-start; box-shadow: var(--shadow-sm);">
             <div style="background: hsla(221, 83%, 53%, 0.1); padding: 8px; border-radius: 10px;">
                 <i data-lucide="info" style="width: 20px; height: 20px; color: var(--primary);"></i>
             </div>
             <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
                 <strong style="color: var(--secondary); display: block; margin-bottom: 4px;">Approval Process</strong>
-                All entries are reviewed for quality assurance. Approved services typically go live within 24 hours of submission.
+                All entries are reviewed for quality assurance. Approved services go live after admin review.
             </p>
+        </div>
+    </div>
+
+    <!-- LIST OF EXISTING SERVICES -->
+    <div class="card glass" style="border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+        <div style="padding: 24px 30px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 20px; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px;">My Existing Services</h3>
+            <span class="badge active" style="font-size: 11px;">{{ services|length }} Total</span>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="padding-left: 30px;">Service Name</th>
+                        <th>Location</th>
+                        <th>Cost</th>
+                        <th>Status</th>
+                        <th style="text-align: right; padding-right: 30px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in services %}
+                    <tr>
+                        <td style="padding-left: 30px; font-weight: 700; color: var(--secondary);">{{ service.service_name }}</td>
+                        <td style="font-size: 14px; color: var(--text-muted);">{{ service.location }}</td>
+                        <td style="font-weight: 800; color: var(--primary);">₹{{ service.cost }}</td>
+                        <td>
+                            {% if service.status == 'Approved' %}
+                            <span class="badge active">Approved</span>
+                            {% elif service.status == 'Pending' %}
+                            <span class="badge" style="background: hsla(37, 91%, 55%, 0.1); color: #92400e;">Pending</span>
+                            {% else %}
+                            <span class="badge cancelled" style="background: hsla(0, 84%, 60%, 0.1); color: var(--danger);">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding-right: 30px;">
+                            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                <a href="{{ url_for('provider.edit_service', service_id=service.id) }}" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">
+                                    <i data-lucide="edit-3" style="width: 14px;"></i> Edit
+                                </a>
+                                <a href="{{ url_for('provider.delete_service', service_id=service.id) }}" class="btn btn-outline" 
+                                   style="padding: 6px 12px; font-size: 12px; color: var(--danger); border-color: hsla(0, 84%, 60%, 0.2);"
+                                   onclick="return confirm('Are you sure you want to permanently delete this service?')">
+                                    <i data-lucide="trash-2" style="width: 14px;"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 60px; color: var(--text-muted);">No services added yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
