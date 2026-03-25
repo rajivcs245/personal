@@ -403,25 +403,25 @@ def provider_cancel_booking(booking_id):
     cur = conn.cursor()
     
     # Verify ownership
-    cur.execute(\"\"\"
+    cur.execute("""
         SELECT b.id, b.user_id, s.service_name, b.booking_date, b.time_slot 
         FROM bookings b JOIN services s ON b.service_id = s.id 
         WHERE b.id = %s AND s.provider_id = %s
-    \"\"\", (booking_id, provider_id))
+    """, (booking_id, provider_id))
     
     booking = cur.fetchone()
     if not booking:
         conn.close()
-        flash(\"Unauthorized or booking not found.\", \"danger\")
+        flash("Unauthorized or booking not found.", "danger")
         return redirect(url_for('provider.provider_dashboard'))
 
-    cur.execute(\"UPDATE bookings SET status = 'Cancelled' WHERE id = %s\", (booking_id,))
+    cur.execute("UPDATE bookings SET status = 'Cancelled' WHERE id = %s", (booking_id,))
     
     # Notify User
-    msg = f\"❌ Your booking for {booking['service_name']} on {booking['booking_date']} at {booking['time_slot']} has been CANCELLED by the provider.\"
-    cur.execute(\"INSERT INTO user_notifications (user_id, message) VALUES (%s, %s)\", (booking['user_id'], msg))
+    msg = f"❌ Your booking for {booking['service_name']} on {booking['booking_date']} at {booking['time_slot']} has been CANCELLED by the provider."
+    cur.execute("INSERT INTO user_notifications (user_id, message) VALUES (%s, %s)", (booking['user_id'], msg))
     
     conn.commit()
     conn.close()
-    flash(\"Booking cancelled successfully.\", \"success\")
+    flash("Booking cancelled successfully.", "success")
     return redirect(url_for('provider.provider_dashboard'))
